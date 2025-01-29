@@ -17,20 +17,20 @@ interface ParquesServicioApi {
     suspend fun obtenerEspecies(): List<Especies>
 
     @POST("parques")
-    suspend fun insertarTrabajador(
-        @Body trabajador: Trabajador
-    ): Trabajador
+    suspend fun insertarParque(
+        @Body parques: Parques
+    ): Parques
 
     @PUT("parques/{id}")
-    suspend fun actualizarTrabajador(
+    suspend fun actualizarParque(
         @Path("id") id: Int,
         @Body parques: Parques
     ): Parques
 
     @DELETE("parques/{id}")
-    suspend fun eliminarTrabajador(
-        @Path("id") id: String
-    ): Trabajador
+    suspend fun eliminarParque(
+        @Path("id") id: Int
+    ): Parques
 
 
 }

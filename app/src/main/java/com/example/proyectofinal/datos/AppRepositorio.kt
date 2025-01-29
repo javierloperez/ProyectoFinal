@@ -9,7 +9,18 @@ import com.example.proyectofinal.modelos.Parques
 
 interface JsonRepositorio {
     suspend fun obtenerParques(): List<Parques>
+    suspend fun obtenerParque(id:Int):Parques
+    suspend fun insertarParque(parques: Parques):Parques
+    suspend fun eliminarParque(id: Int):Parques
+    suspend fun actualizarParque(id: Int,parques: Parques):Parques
+
+
     suspend fun obtenerEspecies(): List<Especies>
+    suspend fun obtenerEspecie(id: Int): Especies
+    suspend fun insertarEspecie(especies: Especies):Especies
+    suspend fun eliminarEspecie(id: Int):Especies
+    suspend fun actualizarEspecie(id: Int,especies: Especies):Especies
+
 }
 
 interface BaseLocalRepositorio {
@@ -45,7 +56,32 @@ class ConexionParquesRepositorio(
     override suspend fun obtenerParques(): List<Parques> =
         servicioApi.obtenerParques()
 
+    override suspend fun obtenerParque(id:Int): Parques =
+        servicioApi.obtenerParque(id)
+
+    override suspend fun insertarParque(parques: Parques): Parques =
+        servicioApi.insertarParque(parques)
+
+    override suspend fun eliminarParque(id: Int): Parques =
+        servicioApi.eliminarParque(id)
+
+    override suspend fun actualizarParque(id: Int, parques: Parques): Parques =
+        servicioApi.actualizarParque(id,parques)
+
     override suspend fun obtenerEspecies(): List<Especies> =
         servicioApi.obtenerEspecies()
+
+    override suspend fun obtenerEspecie(id:Int): Especies =
+        servicioApi.obtenerEspecie(id)
+
+    override suspend fun insertarEspecie(especies: Especies): Especies =
+        servicioApi.insertarEspecie(especies)
+
+    override suspend fun eliminarEspecie(id: Int): Especies =
+        servicioApi.eliminarEspecie(id)
+
+    override suspend fun actualizarEspecie(id: Int, especies: Especies): Especies =
+        servicioApi.actualizarEspecie(id,especies)
+
 }
 

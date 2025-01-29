@@ -16,9 +16,19 @@ interface ParquesServicioApi {
     @GET("parques/{id}")
     suspend fun obtenerEspecies(): List<Especies>
 
+    @GET("parques/{id}")
+    suspend fun obtenerParque(
+    @Path("id") id:Int
+    ):Parques
+
+    @GET("especies/{id}")
+    suspend fun obtenerEspecie(
+        @Path("id") id:Int,
+    ):Especies
+
     @POST("parques")
     suspend fun insertarParque(
-        @Body parques: Parques
+        @Body parque: Parques
     ): Parques
 
     @PUT("parques/{id}")
@@ -31,6 +41,24 @@ interface ParquesServicioApi {
     suspend fun eliminarParque(
         @Path("id") id: Int
     ): Parques
+
+    @POST("especies")
+    suspend fun insertarEspecie(
+        @Body especies: Especies
+    ): Especies
+
+    @PUT("especies/{id}")
+    suspend fun actualizarEspecie(
+        @Path("id") id: Int,
+        @Body especies: Especies
+    ): Especies
+
+    @DELETE("especies/{id}")
+    suspend fun eliminarEspecie(
+        @Path("id") id: Int
+    ): Especies
+
+
 
 
 }

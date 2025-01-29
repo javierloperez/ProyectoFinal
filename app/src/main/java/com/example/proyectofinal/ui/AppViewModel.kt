@@ -19,9 +19,12 @@ import kotlinx.coroutines.launch
 
 sealed interface AppUIstate {
     data class ObtenerExitoParques(val parques: List<Parques>) : AppUIstate
+    data class ObtenerExitoParque(val parques: Parques) : AppUIstate
     data class ObtenerExitoEspecies(val especies: List<Especies>) : AppUIstate
+    data class ObtenerExitoEspecie(val especies: Especies) : AppUIstate
     data class ObtenerExitoFavoritos(val favoritos: List<Favoritos>) : AppUIstate
     data class ObtenerExitoFavorito(val favoritos: Favoritos) : AppUIstate
+
 
     object CrearExito : AppUIstate
     object Cargando : AppUIstate
@@ -54,6 +57,16 @@ class AppViewModel(
         }
     }
 
+    fun obtenerParque(id:Int){
+        viewModelScope.launch {
+            appUIstate = try {
+                val parque = jsonRepositorio.obtenerParque(id)
+                AppUIstate.ObtenerExitoParque(parque)
+            }catch (e:Exception){
+                AppUIstate.Error
+            }
+        }
+    }
     fun obtenerEspecies() {
         viewModelScope.launch {
             appUIstate = try {

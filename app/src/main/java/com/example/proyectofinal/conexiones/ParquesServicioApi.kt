@@ -10,10 +10,10 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ParquesServicioApi {
-    @GET("especies/{id}")
+    @GET("parques")
     suspend fun obtenerParques(): List<Parques>
 
-    @GET("parques/{id}")
+    @GET("especies")
     suspend fun obtenerEspecies(): List<Especies>
 
     @GET("parques/{id}")

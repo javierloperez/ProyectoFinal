@@ -2,6 +2,7 @@ package com.example.proyectofinal.ui
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -42,6 +43,19 @@ class AppViewModel(
     var appUIstate: AppUIstate by mutableStateOf(AppUIstate.Cargando)
         private set
 
+    var parquePulsado: Parques by mutableStateOf(Parques(0,"",0.0, emptyList()))
+        private set
+
+    var especiePulsada: Especies by mutableStateOf(Especies(0,"","", ""))
+        private set
+
+    fun actualizarParquePulsado(parques: Parques){
+        parquePulsado = parques
+    }
+
+    fun actualizarEspeciePulsadad(especies: Especies){
+        especiePulsada = especies
+    }
     init {
         obtenerParques()
     }
@@ -67,12 +81,90 @@ class AppViewModel(
             }
         }
     }
+    fun insertarParque(parques: Parques){
+        viewModelScope.launch {
+            try {
+                jsonRepositorio.insertarParque(parques)
+                AppUIstate.CrearExito
+            }catch (e:Exception){
+                AppUIstate.Error
+            }
+        }
+    }
+
+    fun actualizarParque(id: Int,parques: Parques){
+        viewModelScope.launch {
+            try {
+                jsonRepositorio.actualizarParque(id, parques)
+                AppUIstate.ActualizarExito
+            }catch (e:Exception){
+                AppUIstate.Error
+            }
+        }
+    }
+
+    fun eliminarParque(id: Int){
+        viewModelScope.launch {
+            try {
+                jsonRepositorio.eliminarParque(id)
+                AppUIstate.EliminarExito
+            }catch (e:Exception){
+                AppUIstate.Error
+            }
+        }
+    }
+
+
     fun obtenerEspecies() {
         viewModelScope.launch {
             appUIstate = try {
                 val lista = jsonRepositorio.obtenerEspecies()
                 AppUIstate.ObtenerExitoEspecies(lista)
             } catch (e: Exception) {
+                AppUIstate.Error
+            }
+        }
+    }
+
+    fun obtenerEspecie(id:Int){
+        viewModelScope.launch {
+            appUIstate = try {
+                val especie = jsonRepositorio.obtenerEspecie(id)
+                AppUIstate.ObtenerExitoEspecie(especie)
+            }catch (e:Exception){
+                AppUIstate.Error
+            }
+        }
+    }
+
+    fun insertarEspecie(especies: Especies){
+        viewModelScope.launch {
+            try {
+                jsonRepositorio.insertarEspecie(especies)
+                AppUIstate.CrearExito
+            }catch (e:Exception){
+                AppUIstate.Error
+            }
+        }
+    }
+
+    fun actualizarEspecie(id: Int,especies: Especies){
+        viewModelScope.launch {
+            try {
+                jsonRepositorio.actualizarEspecie(id,especies)
+                AppUIstate.ActualizarExito
+            }catch (e:Exception){
+                AppUIstate.Error
+            }
+        }
+    }
+
+    fun eliminarEspecie(id: Int){
+        viewModelScope.launch {
+            try {
+                jsonRepositorio.eliminarEspecie(id)
+                AppUIstate.EliminarExito
+            }catch (e:Exception){
                 AppUIstate.Error
             }
         }

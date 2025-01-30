@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.squareup.retrofit2)
     implementation(libs.jetbrains.kotlinx.serialization)
     implementation(libs.jakewharton.retrofit)
+    implementation("androidx.compose.material:material-icons-extended:1.5.1")
     implementation("io.coil-kt:coil-compose:2.2.2")
     implementation(libs.squareup.okhttp3)
     implementation(libs.androidx.room.runtime)

@@ -6,4 +6,9 @@
     <string name="actualizar">Actualizar</string>
     <string name="atras">Atrás</string>
     <string name="insertar">Insertar</string>
+    <string name="nombre">Nombre</string>
+    <string name="id">Id</string>
+    <string name="descripcion">Descripción</string>
+    <string name="tipo">Tipo</string>
+    <string name="extension">Extensión</string>
 </resources>

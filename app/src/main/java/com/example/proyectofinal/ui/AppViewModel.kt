@@ -17,21 +17,35 @@ import com.example.proyectofinal.modelos.Especies
 import com.example.proyectofinal.modelos.Favoritos
 import com.example.proyectofinal.modelos.Parques
 import kotlinx.coroutines.launch
+import kotlin.math.log
 
-sealed interface AppUIstate {
-    data class ObtenerExitoParques(val parques: List<Parques>) : AppUIstate
-    data class ObtenerExitoParque(val parques: Parques) : AppUIstate
-    data class ObtenerExitoEspecies(val especies: List<Especies>) : AppUIstate
-    data class ObtenerExitoEspecie(val especies: Especies) : AppUIstate
-    data class ObtenerExitoFavoritos(val favoritos: List<Favoritos>) : AppUIstate
-    data class ObtenerExitoFavorito(val favoritos: Favoritos) : AppUIstate
+sealed interface AppUIstateParque {
+    data class ObtenerExitoParques(val parques: List<Parques>) : AppUIstateParque
+    data class ObtenerExitoParque(val parques: Parques) : AppUIstateParque
+    data class ObtenerExitoFavoritos(val favoritos: List<Favoritos>) : AppUIstateParque
+    data class ObtenerExitoFavorito(val favoritos: Favoritos) : AppUIstateParque
 
 
-    object CrearExito : AppUIstate
-    object Cargando : AppUIstate
-    object Error : AppUIstate
-    object ActualizarExito : AppUIstate
-    object EliminarExito : AppUIstate
+    object CrearExito : AppUIstateParque
+    object Cargando : AppUIstateParque
+    object Error : AppUIstateParque
+    object ActualizarExito : AppUIstateParque
+    object EliminarExito : AppUIstateParque
+
+}
+
+sealed interface AppUIstateEspecie {
+    data class ObtenerExitoEspecies(val especies: List<Especies>) : AppUIstateEspecie
+    data class ObtenerExitoEspecie(val especies: Especies) : AppUIstateEspecie
+    data class ObtenerExitoFavoritos(val favoritos: List<Favoritos>) : AppUIstateEspecie
+    data class ObtenerExitoFavorito(val favoritos: Favoritos) : AppUIstateEspecie
+
+
+    object CrearExito : AppUIstateEspecie
+    object Cargando : AppUIstateEspecie
+    object Error : AppUIstateEspecie
+    object ActualizarExito : AppUIstateEspecie
+    object EliminarExito : AppUIstateEspecie
 
 }
 
@@ -40,44 +54,65 @@ class AppViewModel(
     private val jsonRepositorio: JsonRepositorio
 ) : ViewModel() {
 
-    var appUIstate: AppUIstate by mutableStateOf(AppUIstate.Cargando)
+    var appUIstateParque: AppUIstateParque by mutableStateOf(AppUIstateParque.Cargando)
         private set
 
-    var parquePulsado: Parques by mutableStateOf(Parques(0,"",0.0, emptyList()))
+    var appUIstateEspecie: AppUIstateEspecie by mutableStateOf(AppUIstateEspecie.Cargando)
         private set
 
-    var especiePulsada: Especies by mutableStateOf(Especies(0,"","", ""))
+    var objetoPulsado: Any? by mutableStateOf(null)
         private set
 
-    fun actualizarParquePulsado(parques: Parques){
-        parquePulsado = parques
-    }
 
-    fun actualizarEspeciePulsadad(especies: Especies){
-        especiePulsada = especies
+
+    fun <T> actualizarObjetoPulsado(objeto:T){
+        objetoPulsado = objeto
     }
     init {
         obtenerParques()
+        obtenerEspecies()
     }
+
+    fun actualizarObjeto(objeto: Any){
+
+        viewModelScope.launch {
+            try {
+                when(objeto){
+                    is Parques ->{
+                        jsonRepositorio.actualizarParque(objeto.id, objeto)
+                        appUIstateParque = AppUIstateParque.ActualizarExito
+                    }
+                    is Especies -> {
+                        jsonRepositorio.actualizarEspecie(objeto.id,objeto)
+                        appUIstateEspecie = AppUIstateEspecie.ActualizarExito
+                    }
+                }
+
+            }catch (e:Exception){
+                AppUIstateParque.Error
+            }
+        }
+    }
+
 
     fun obtenerParques() {
         viewModelScope.launch {
-            appUIstate = try {
+            appUIstateParque = try {
                 val lista = jsonRepositorio.obtenerParques()
-                AppUIstate.ObtenerExitoParques(lista)
+                AppUIstateParque.ObtenerExitoParques(lista)
             } catch (e: Exception) {
-                AppUIstate.Error
+                AppUIstateParque.Error
             }
         }
     }
 
     fun obtenerParque(id:Int){
         viewModelScope.launch {
-            appUIstate = try {
+            appUIstateParque = try {
                 val parque = jsonRepositorio.obtenerParque(id)
-                AppUIstate.ObtenerExitoParque(parque)
+                AppUIstateParque.ObtenerExitoParque(parque)
             }catch (e:Exception){
-                AppUIstate.Error
+                AppUIstateParque.Error
             }
         }
     }
@@ -85,31 +120,23 @@ class AppViewModel(
         viewModelScope.launch {
             try {
                 jsonRepositorio.insertarParque(parques)
-                AppUIstate.CrearExito
+                AppUIstateParque.CrearExito
             }catch (e:Exception){
-                AppUIstate.Error
+                AppUIstateParque.Error
             }
         }
     }
 
-    fun actualizarParque(id: Int,parques: Parques){
-        viewModelScope.launch {
-            try {
-                jsonRepositorio.actualizarParque(id, parques)
-                AppUIstate.ActualizarExito
-            }catch (e:Exception){
-                AppUIstate.Error
-            }
-        }
-    }
+
+
 
     fun eliminarParque(id: Int){
         viewModelScope.launch {
             try {
                 jsonRepositorio.eliminarParque(id)
-                AppUIstate.EliminarExito
+                AppUIstateParque.EliminarExito
             }catch (e:Exception){
-                AppUIstate.Error
+                AppUIstateParque.Error
             }
         }
     }
@@ -117,22 +144,22 @@ class AppViewModel(
 
     fun obtenerEspecies() {
         viewModelScope.launch {
-            appUIstate = try {
+            appUIstateEspecie = try {
                 val lista = jsonRepositorio.obtenerEspecies()
-                AppUIstate.ObtenerExitoEspecies(lista)
+                AppUIstateEspecie.ObtenerExitoEspecies(lista)
             } catch (e: Exception) {
-                AppUIstate.Error
+                AppUIstateEspecie.Error
             }
         }
     }
 
     fun obtenerEspecie(id:Int){
         viewModelScope.launch {
-            appUIstate = try {
+            appUIstateEspecie = try {
                 val especie = jsonRepositorio.obtenerEspecie(id)
-                AppUIstate.ObtenerExitoEspecie(especie)
+                AppUIstateEspecie.ObtenerExitoEspecie(especie)
             }catch (e:Exception){
-                AppUIstate.Error
+                AppUIstateEspecie.Error
             }
         }
     }
@@ -141,90 +168,82 @@ class AppViewModel(
         viewModelScope.launch {
             try {
                 jsonRepositorio.insertarEspecie(especies)
-                AppUIstate.CrearExito
+                AppUIstateEspecie.CrearExito
             }catch (e:Exception){
-                AppUIstate.Error
+                AppUIstateEspecie.Error
             }
         }
     }
 
-    fun actualizarEspecie(id: Int,especies: Especies){
-        viewModelScope.launch {
-            try {
-                jsonRepositorio.actualizarEspecie(id,especies)
-                AppUIstate.ActualizarExito
-            }catch (e:Exception){
-                AppUIstate.Error
-            }
-        }
-    }
 
     fun eliminarEspecie(id: Int){
         viewModelScope.launch {
             try {
                 jsonRepositorio.eliminarEspecie(id)
-                AppUIstate.EliminarExito
+                AppUIstateEspecie.EliminarExito
             }catch (e:Exception){
-                AppUIstate.Error
+                AppUIstateEspecie.Error
             }
         }
     }
 
     fun obtenerFavoritos() {
         viewModelScope.launch {
-            appUIstate = try {
+            appUIstateParque = try {
                 val lista = baseLocalRepositorio.obtenerFavoritos()
-                AppUIstate.ObtenerExitoFavoritos(lista)
+                AppUIstateParque.ObtenerExitoFavoritos(lista)
             } catch (e: Exception) {
-                AppUIstate.Error
+                AppUIstateParque.Error
             }
         }
     }
 
     fun obtenerFavorito(id: Int) {
         viewModelScope.launch {
-            appUIstate = try {
+            appUIstateParque = try {
                 val favorito = baseLocalRepositorio.obtenerFavorito(id)
-                AppUIstate.ObtenerExitoFavorito(favorito)
+                AppUIstateParque.ObtenerExitoFavorito(favorito)
             } catch (e: Exception) {
-                AppUIstate.Error
+                AppUIstateParque.Error
             }
         }
     }
 
     fun actualizarFavorito(favoritos: Favoritos) {
         viewModelScope.launch {
-            appUIstate = try {
+            appUIstateParque = try {
                 baseLocalRepositorio.actualizarFavorito(favoritos)
-                AppUIstate.ActualizarExito
+                AppUIstateParque.ActualizarExito
             } catch (e: Exception) {
-                AppUIstate.Error
+                AppUIstateParque.Error
             }
         }
     }
 
     fun insertarFavorito(favoritos: Favoritos) {
         viewModelScope.launch {
-            appUIstate = try {
+            appUIstateParque = try {
                 baseLocalRepositorio.insertarFavorito(favoritos)
-                AppUIstate.CrearExito
+                AppUIstateParque.CrearExito
 
             } catch (e: Exception) {
-                AppUIstate.Error
+                AppUIstateParque.Error
             }
         }
     }
 
     fun eliminarFavorito(favoritos: Favoritos) {
         viewModelScope.launch {
-            appUIstate = try {
+            appUIstateParque = try {
                 baseLocalRepositorio.eliminarFavorito(favoritos)
-                AppUIstate.EliminarExito
+                AppUIstateParque.EliminarExito
             } catch (e: Exception) {
-                AppUIstate.Error
+                AppUIstateParque.Error
             }
         }
     }
+
+
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {

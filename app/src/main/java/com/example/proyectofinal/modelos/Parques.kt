@@ -11,6 +11,5 @@ data class Parques(
     val nombre:String = "",
     @SerialName(value = "extension")
     val extension:Double = 0.0,
-    @SerialName(value = "especies")
-    val especies:List<Especies> = emptyList(),
+
 )

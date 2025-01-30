@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.DrawerState
@@ -39,17 +40,21 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.NavHost
 import com.example.proyectofinal.ui.pantallas.PantallaActualizar
-import com.example.proyectofinal.ui.pantallas.PantallaEspecies
-import com.example.proyectofinal.ui.pantallas.PantallaInicio
+import com.example.proyectofinal.ui.pantallas.PantallaInicioEspecie
+import com.example.proyectofinal.ui.pantallas.PantallaInicioParque
 import com.example.proyectofinal.ui.pantallas.PantallaInsertar
 
 
@@ -80,8 +85,10 @@ fun ProyectoApp(
         pilaRetroceso?.destination?.route ?: Pantallas.Parques.name
     )
 
+    val uiStateParque = viewModel.appUIstateParque
+    val uiStateEspecie = viewModel.appUIstateEspecie
 
-    val uiState = viewModel.appUIstate
+    var pantallaElegida by remember { mutableStateOf(Pantallas.Especies.name) }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -106,8 +113,24 @@ fun ProyectoApp(
                     pantallaActual = pantallaActual,
                     drawerState = drawerState
                 )
+            }, floatingActionButton = {
+                if (pantallaActual.titulo == R.string.parques || pantallaActual.titulo == R.string.especies) {
+                    FloatingActionButton(
+                        onClick = { navController.navigate(route = Pantallas.Insertar.name) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Add,
+                            contentDescription = stringResource(R.string.insertar),
+
+
+                            )
+                    }
+
+                }
             }
+
         ) { innerPadding ->
+
 
             NavHost(
                 navController = navController,
@@ -116,34 +139,48 @@ fun ProyectoApp(
             ) {
 
                 composable(route = Pantallas.Parques.name) {
-                    PantallaInicio(
-                        appUIState = uiState,
+                    PantallaInicioParque(
+                        appUIState = uiStateParque,
                         onObtenerParques = { viewModel.obtenerParques() },
                         modifier = Modifier
                             .fillMaxSize(),
                         onPulsarActualizar = {
-                            viewModel.actualizarParquePulsado(it)
+                            viewModel.actualizarObjetoPulsado(it)
+                            pantallaElegida = Pantallas.Parques.name
                             navController.navigate(Pantallas.Actualizar.name)
                         }
                     )
                 }
                 composable(route = Pantallas.Especies.name) {
-                    PantallaEspecies(
+                    PantallaInicioEspecie(
+                        appUIState = uiStateEspecie,
+                        onObtenerEspecie = { viewModel.obtenerEspecies() },
                         modifier = Modifier
-                            .fillMaxSize()
+                            .fillMaxSize(),
+                        onPulsarActualizar = {
+                            viewModel.actualizarObjetoPulsado(it)
+                            pantallaElegida= Pantallas.Especies.name
+                            navController.navigate(Pantallas.Actualizar.name)
+                        }
                     )
+
                 }
                 composable(route = Pantallas.Actualizar.name) {
                     PantallaActualizar(
                         modifier = Modifier
                             .fillMaxSize(),
-
+                        objeto = viewModel.objetoPulsado,
+                        onObjetoActualizado = {
+                            viewModel.actualizarObjeto(it)
+                            navController.popBackStack(pantallaElegida, inclusive = false)
+                        }
                     )
                 }
                 composable(route = Pantallas.Insertar.name) {
                     PantallaInsertar(
                         modifier = Modifier
-                            .fillMaxSize()
+                            .fillMaxSize(),
+                        onObjetoInsertar = {}
                     )
                 }
 

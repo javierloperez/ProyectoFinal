@@ -1,14 +1,25 @@
 <resources>
     <string name="app_name">ProyectoFinal</string>
-    <string name="login">Login</string>
+    <string name="login" translatable="false">Login</string>
     <string name="parques">Parques</string>
     <string name="especies">Especies</string>
     <string name="actualizar">Actualizar</string>
     <string name="atras">Atrás</string>
     <string name="insertar">Insertar</string>
     <string name="nombre">Nombre</string>
-    <string name="id">Id</string>
+    <string name="id" translatable="false">Id</string>
     <string name="descripcion">Descripción</string>
     <string name="tipo">Tipo</string>
     <string name="extension">Extensión</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="tituloEliminar">¿Desea eliminar el parque?</string>
+    <string name="salir">Salir</string>
+    <string name="apodo">Apodo</string>
+    <string name="abrirMenu">Abrir menu</string>
+    <string name="actualizarFavs">Añadir apodos</string>
+    <string name="favoritos">Favoritos</string>
+    <string name="error" translatable="false">Error</string>
+    <string name="cargando">Cargando</string>
+    <string name="estrella">Estrella</string>
 </resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FinalProject</string>
+    <string name="parques">Parks</string>
+    <string name="especies">Species</string>
+    <string name="actualizar">Update</string>
+    <string name="atras">Back</string>
+    <string name="insertar">Create</string>
+    <string name="nombre">Name</string>
+    <string name="descripcion">Description</string>
+    <string name="tipo">Type</string>
+    <string name="extension">Extension</string>
+    <string name="cancelar">Cancel</string>
+    <string name="aceptar">Accept</string>
+    <string name="tituloEliminar">Do you want to delete the park?</string>
+    <string name="salir">Exit</string>
+    <string name="apodo">Nickname</string>
+    <string name="abrirMenu">Open menu</string>
+    <string name="actualizarFavs">Add nickname</string>
+    <string name="favoritos">Favorites</string>
+    <string name="cargando">Loading</string>
+    <string name="estrella">Star</string>
+</resources>

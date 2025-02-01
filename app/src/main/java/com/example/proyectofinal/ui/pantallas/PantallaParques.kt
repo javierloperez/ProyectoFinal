@@ -15,8 +15,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,47 +34,64 @@ import com.example.proyectofinal.modelos.Parques
 import com.example.proyectofinal.ui.AppUIstateParque
 
 @Composable
-fun PantallaInicioParque(modifier: Modifier, appUIState: AppUIstateParque, onPulsarActualizar: (Parques) -> Unit, onObtenerParques: () -> Unit) {
+fun PantallaInicioParque(
+    modifier: Modifier,
+    appUIState: AppUIstateParque,
+    onPulsarActualizar: (Parques) -> Unit,
+    onObtenerParques: () -> Unit,
+    onEliminarParque: (Int) -> Unit
+) {
 
-    when(appUIState){
+    when (appUIState) {
         is AppUIstateParque.ObtenerExitoParques -> {
             PantallaParques(
                 listaParques = appUIState.parques,
-                onPulsarActualizar = onPulsarActualizar
+                onPulsarActualizar = onPulsarActualizar,
+                onEliminarParque = onEliminarParque
             )
         }
+
         is AppUIstateParque.Error -> PantallaError(modifier)
         is AppUIstateParque.Cargando -> PantallaCargando(modifier)
         is AppUIstateParque.CrearExito -> onObtenerParques()
         is AppUIstateParque.ActualizarExito -> onObtenerParques()
-        else ->{
+        is AppUIstateParque.EliminarExito -> onObtenerParques()
+        else -> {
         }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PantallaParques(listaParques: List<Parques>, onPulsarActualizar:(Parques) -> Unit) {
+fun PantallaParques(
+    listaParques: List<Parques>,
+    onPulsarActualizar: (Parques) -> Unit,
+    onEliminarParque: (Int) -> Unit
+) {
 
-
+    var idParque by remember { mutableStateOf(0) }
+    var eliminarDialogo by remember { mutableStateOf(false) }
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
             .fillMaxSize(),
 
-    ) {
-
-        items(listaParques){ parque ->
+        ) {
+        items(listaParques) { parque ->
 
             Box(
                 modifier = Modifier
                     .padding(8.dp)
                     .combinedClickable(
-                        onClick = {onPulsarActualizar(parque)}
+                        onClick = { onPulsarActualizar(parque) },
+                        onLongClick = {
+                            idParque = parque.id
+                            eliminarDialogo = true
+                        }
                     )
                     .border(width = 2.dp, color = Color.Black)
                     .aspectRatio(1.8f)
-            ){
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -78,12 +101,33 @@ fun PantallaParques(listaParques: List<Parques>, onPulsarActualizar:(Parques) ->
                 ) {
                     Text(parque.nombre)
                     Spacer(Modifier.height(5.dp))
-                    Text(stringResource(R.string.extension) +": "+parque.extension.toString())
+                    Text(stringResource(R.string.extension) + ": " + parque.extension.toString())
                 }
-
             }
-
         }
+    }
+    if (eliminarDialogo) {
+        AlertDialog(
+            onDismissRequest = {
+                eliminarDialogo = false
+            },
+            title = { Text(text = stringResource(R.string.tituloEliminar)) },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        eliminarDialogo = false
+                    }) {
+                    Text(text = stringResource(R.string.cancelar))
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    onEliminarParque(idParque)
+                }) {
+                    Text(text = stringResource(R.string.aceptar))
+                }
+            },
+        )
     }
 }
 
@@ -94,7 +138,7 @@ fun PantallaCargando(modifier: Modifier) {
     Image(
         modifier = modifier.fillMaxSize(),
         painter = painterResource(R.drawable.cargando),
-        contentDescription = "Cargando"
+        contentDescription = stringResource(R.string.cargando)
     )
 }
 
@@ -103,6 +147,6 @@ fun PantallaError(modifier: Modifier) {
     Image(
         modifier = modifier.fillMaxSize(),
         painter = painterResource(R.drawable.error),
-        contentDescription = "Error"
+        contentDescription = stringResource(R.string.error)
     )
 }

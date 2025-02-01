@@ -71,6 +71,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.2.2")
     implementation(libs.squareup.okhttp3)
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.ui.text.google.fonts)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     testImplementation(libs.junit)

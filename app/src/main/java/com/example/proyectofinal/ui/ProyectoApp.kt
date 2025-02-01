@@ -1,15 +1,19 @@
 package com.example.proyectofinal.ui
 
+import android.app.Activity
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
@@ -39,6 +43,10 @@ import com.example.proyectofinal.datos.HamburgerMenu
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.material.icons.filled.Pets
+import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.IconButton
@@ -46,14 +54,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.NavHost
 import com.example.proyectofinal.ui.pantallas.PantallaActualizar
 import com.example.proyectofinal.ui.pantallas.PantallaInicioEspecie
+import com.example.proyectofinal.ui.pantallas.PantallaInicioFavoritos
 import com.example.proyectofinal.ui.pantallas.PantallaInicioParque
 import com.example.proyectofinal.ui.pantallas.PantallaInsertar
 
@@ -62,7 +74,8 @@ enum class Pantallas(@StringRes val titulo: Int) {
     Parques(titulo = R.string.parques),
     Especies(titulo = R.string.especies),
     Actualizar(titulo = R.string.actualizar),
-    Insertar(titulo = R.string.insertar)
+    Insertar(titulo = R.string.insertar),
+    Favoritos(titulo = R.string.favoritos)
 }
 
 val menu = arrayOf(
@@ -71,6 +84,7 @@ val menu = arrayOf(
 
     )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProyectoApp(
     viewModel: AppViewModel = viewModel(factory = AppViewModel.Factory),
@@ -80,7 +94,7 @@ fun ProyectoApp(
 ) {
 
     val pilaRetroceso by navController.currentBackStackEntryAsState()
-
+    val App = LocalContext.current as? Activity
     val pantallaActual = Pantallas.valueOf(
         pilaRetroceso?.destination?.route ?: Pantallas.Parques.name
     )
@@ -88,7 +102,8 @@ fun ProyectoApp(
     val uiStateParque = viewModel.appUIstateParque
     val uiStateEspecie = viewModel.appUIstateEspecie
 
-    var pantallaElegida by remember { mutableStateOf(Pantallas.Especies.name) }
+    var pantallaElegida by remember { mutableStateOf(Pantallas.Parques.name) }
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -97,21 +112,49 @@ fun ProyectoApp(
                 DrawerContent(
                     menu = menu,
                     pantallaActual = pantallaActual
+
                 ) { ruta ->
                     coroutineScope.launch {
                         drawerState.close()
+
                     }
 
                     navController.navigate(ruta)
+
+                }
+
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(360.dp),
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally,
+
+                ) {
+                Button(
+                    onClick = { App?.finish() },
+                    modifier = Modifier
+                        .padding(bottom = 150.dp)
+                        .width(150.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.salir),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
             }
         },
-    ) {
+
+        ) {
         Scaffold(
             topBar = {
                 AppTopBar(
                     pantallaActual = pantallaActual,
-                    drawerState = drawerState
+                    drawerState = drawerState,
+                    navController = navController,
+                    scrollBehavior = scrollBehavior
+
                 )
             }, floatingActionButton = {
                 if (pantallaActual.titulo == R.string.parques || pantallaActual.titulo == R.string.especies) {
@@ -121,9 +164,7 @@ fun ProyectoApp(
                         Icon(
                             imageVector = Icons.Filled.Add,
                             contentDescription = stringResource(R.string.insertar),
-
-
-                            )
+                        )
                     }
 
                 }
@@ -139,27 +180,31 @@ fun ProyectoApp(
             ) {
 
                 composable(route = Pantallas.Parques.name) {
+                    pantallaElegida = Pantallas.Parques.name
                     PantallaInicioParque(
                         appUIState = uiStateParque,
                         onObtenerParques = { viewModel.obtenerParques() },
                         modifier = Modifier
                             .fillMaxSize(),
+                        onEliminarParque = { viewModel.eliminarParque(it) },
                         onPulsarActualizar = {
                             viewModel.actualizarObjetoPulsado(it)
-                            pantallaElegida = Pantallas.Parques.name
                             navController.navigate(Pantallas.Actualizar.name)
                         }
                     )
                 }
                 composable(route = Pantallas.Especies.name) {
+                    pantallaElegida = Pantallas.Especies.name
                     PantallaInicioEspecie(
                         appUIState = uiStateEspecie,
                         onObtenerEspecie = { viewModel.obtenerEspecies() },
                         modifier = Modifier
                             .fillMaxSize(),
+                        onEliminarEspecie = { viewModel.eliminarEspecie(it) },
+                        onFavoritoPulsado = { viewModel.insertarFavorito(it) },
+                        onEliminarFavorito = { viewModel.eliminarFavorito(it) },
                         onPulsarActualizar = {
                             viewModel.actualizarObjetoPulsado(it)
-                            pantallaElegida= Pantallas.Especies.name
                             navController.navigate(Pantallas.Actualizar.name)
                         }
                     )
@@ -178,9 +223,24 @@ fun ProyectoApp(
                 }
                 composable(route = Pantallas.Insertar.name) {
                     PantallaInsertar(
+                        tipo = pantallaElegida,
                         modifier = Modifier
                             .fillMaxSize(),
-                        onObjetoInsertar = {}
+                        onObjetoInsertar = {
+                            viewModel.insertarObjeto(it)
+                            navController.popBackStack(pantallaElegida, inclusive = false)
+                        }
+                    )
+                }
+                composable(route = Pantallas.Favoritos.name) {
+                    pantallaElegida = Pantallas.Favoritos.name
+                    PantallaInicioFavoritos(
+                        onObtenerFavoritos = { viewModel.obtenerEspecies() },
+                        appUiState = uiStateEspecie,
+                        onPulsarActualizar = {
+                            viewModel.actualizarObjetoPulsado(it)
+                            navController.navigate(Pantallas.Actualizar.name)
+                        }
                     )
                 }
 
@@ -231,10 +291,12 @@ private fun DrawerContent(
 fun AppTopBar(
     pantallaActual: Pantallas,
     drawerState: DrawerState?,
+    navController: NavHostController,
+    scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier
 ) {
     val coroutineScope = rememberCoroutineScope()
-
+    var mostrarMenu by remember { mutableStateOf(false) }
     TopAppBar(
         title = { Text(text = stringResource(id = pantallaActual.titulo)) },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
@@ -255,6 +317,29 @@ fun AppTopBar(
                 }
             }
         },
+        actions = {
+            if (pantallaActual == Pantallas.Parques || pantallaActual == Pantallas.Especies) {
+                IconButton(onClick = { mostrarMenu = true }) {
+                    Icon(
+                        imageVector = Icons.Outlined.MoreVert,
+                        contentDescription = stringResource(R.string.abrirMenu)
+                    )
+                }
+                DropdownMenu(
+                    expanded = mostrarMenu,
+                    onDismissRequest = { mostrarMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(text = stringResource(id = R.string.actualizarFavs)) },
+                        onClick = {
+                            mostrarMenu = false
+                            navController.navigate(Pantallas.Favoritos.name)
+                        }
+                    )
+                }
+            }
+        },
+        scrollBehavior = scrollBehavior,
         modifier = modifier
     )
 }

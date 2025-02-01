@@ -5,20 +5,21 @@ import com.example.proyectofinal.dao.DaoBaseDatos
 import com.example.proyectofinal.modelos.Especies
 import com.example.proyectofinal.modelos.Favoritos
 import com.example.proyectofinal.modelos.Parques
+import retrofit2.Response
 
 
 interface JsonRepositorio {
     suspend fun obtenerParques(): List<Parques>
     suspend fun obtenerParque(id:Int):Parques
     suspend fun insertarParque(parques: Parques):Parques
-    suspend fun eliminarParque(id: Int):Parques
+    suspend fun eliminarParque(id: Int):Response<Unit>
     suspend fun actualizarParque(id: Int,parques: Parques):Parques
 
 
     suspend fun obtenerEspecies(): List<Especies>
     suspend fun obtenerEspecie(id: Int): Especies
     suspend fun insertarEspecie(especies: Especies):Especies
-    suspend fun eliminarEspecie(id: Int):Especies
+    suspend fun eliminarEspecie(id: Int):Response<Unit>
     suspend fun actualizarEspecie(id: Int,especies: Especies):Especies
 
 }
@@ -62,7 +63,7 @@ class ConexionParquesRepositorio(
     override suspend fun insertarParque(parques: Parques): Parques =
         servicioApi.insertarParque(parques)
 
-    override suspend fun eliminarParque(id: Int): Parques =
+    override suspend fun eliminarParque(id: Int): Response<Unit> =
         servicioApi.eliminarParque(id)
 
     override suspend fun actualizarParque(id: Int, parques: Parques): Parques =
@@ -77,7 +78,7 @@ class ConexionParquesRepositorio(
     override suspend fun insertarEspecie(especies: Especies): Especies =
         servicioApi.insertarEspecie(especies)
 
-    override suspend fun eliminarEspecie(id: Int): Especies =
+    override suspend fun eliminarEspecie(id: Int): Response<Unit> =
         servicioApi.eliminarEspecie(id)
 
     override suspend fun actualizarEspecie(id: Int, especies: Especies): Especies =

@@ -17,6 +17,7 @@ kotlinxSerialization = "1.5.1"
 jakewhertonRetrofit = "1.0.0"
 squareupOkhttp3 = "4.11.0"
 serialization = "1.9.10"
+uiTextGoogleFonts = "1.7.7"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -42,6 +43,7 @@ squareup-retrofit2 = { group = "com.squareup.retrofit2", name = "retrofit", vers
 jetbrains-kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization"}
 jakewharton-retrofit = { group = "com.jakewharton.retrofit", name = "retrofit2-kotlinx-serialization-converter", version.ref = "jakewhertonRetrofit"}
 squareup-okhttp3 = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "squareupOkhttp3"}
+androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -26,11 +26,11 @@ import com.example.proyectofinal.modelos.Especies
 import com.example.proyectofinal.modelos.Parques
 
 @Composable
-fun PantallaInsertar(modifier: Modifier, onObjetoInsertar: (Any) -> Unit, tipo: String) {
+fun PantallaInsertar(modifier: Modifier, onObjetoInsertar: (Any) -> Unit, tipo: Int) {
 
     when (tipo) {
-        stringResource(R.string.parques) -> InsertarParque(onParqueInsertado = onObjetoInsertar)
-        stringResource(R.string.especies) -> InsertarEspecie(onEspecieInsertada = onObjetoInsertar)
+        R.string.parques -> InsertarParque(onParqueInsertado = onObjetoInsertar)
+        R.string.especies -> InsertarEspecie(onEspecieInsertada = onObjetoInsertar)
     }
 }
 

@@ -102,7 +102,7 @@ fun ProyectoApp(
     val uiStateParque = viewModel.appUIstateParque
     val uiStateEspecie = viewModel.appUIstateEspecie
 
-    var pantallaElegida by remember { mutableStateOf(Pantallas.Parques.name) }
+    var pantallaElegida by remember { mutableStateOf(Pantallas.Parques) }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
     ModalNavigationDrawer(
@@ -180,7 +180,7 @@ fun ProyectoApp(
             ) {
 
                 composable(route = Pantallas.Parques.name) {
-                    pantallaElegida = Pantallas.Parques.name
+                    pantallaElegida = Pantallas.Parques
                     PantallaInicioParque(
                         appUIState = uiStateParque,
                         onObtenerParques = { viewModel.obtenerParques() },
@@ -194,7 +194,7 @@ fun ProyectoApp(
                     )
                 }
                 composable(route = Pantallas.Especies.name) {
-                    pantallaElegida = Pantallas.Especies.name
+                    pantallaElegida = Pantallas.Especies
                     PantallaInicioEspecie(
                         appUIState = uiStateEspecie,
                         onObtenerEspecie = { viewModel.obtenerEspecies() },
@@ -217,23 +217,23 @@ fun ProyectoApp(
                         objeto = viewModel.objetoPulsado,
                         onObjetoActualizado = {
                             viewModel.actualizarObjeto(it)
-                            navController.popBackStack(pantallaElegida, inclusive = false)
+                            navController.popBackStack(pantallaElegida.name, inclusive = false)
                         }
                     )
                 }
                 composable(route = Pantallas.Insertar.name) {
                     PantallaInsertar(
-                        tipo = pantallaElegida,
+                        tipo = pantallaElegida.titulo,
                         modifier = Modifier
                             .fillMaxSize(),
                         onObjetoInsertar = {
                             viewModel.insertarObjeto(it)
-                            navController.popBackStack(pantallaElegida, inclusive = false)
+                            navController.popBackStack(pantallaElegida.name, inclusive = false)
                         }
                     )
                 }
                 composable(route = Pantallas.Favoritos.name) {
-                    pantallaElegida = Pantallas.Favoritos.name
+                    pantallaElegida = Pantallas.Favoritos
                     PantallaInicioFavoritos(
                         onObtenerFavoritos = { viewModel.obtenerEspecies() },
                         appUiState = uiStateEspecie,

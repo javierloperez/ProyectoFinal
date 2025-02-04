@@ -59,7 +59,4 @@ interface ParquesServicioApi {
         @Path("id") id: Int
     ): Response<Unit>
 
-
-
-
 }
